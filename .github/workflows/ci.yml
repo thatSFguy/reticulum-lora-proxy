@@ -7,67 +7,14 @@ on:
   pull_request:
 
 jobs:
-  interop:
-    name: Live interop — announce vectors vs upstream RNS
-    runs-on: ubuntu-latest
-    # Don't fail the whole workflow if upstream RNS install / test runs
-    # flake — informational only. Once the validator is stable across
-    # several rns releases, drop continue-on-error to start gating.
-    continue-on-error: true
-    steps:
-      - name: Checkout this repo
-        uses: actions/checkout@v4
-        with:
-          path: reticulum-lora-transport
-
-      - name: Checkout reticulum-specifications (sibling layout)
-        uses: actions/checkout@v4
-        with:
-          repository: thatSFguy/reticulum-specifications
-          path: reticulum-specifications
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install upstream RNS
-        # Pin nothing — we want to detect the day rns ships a wire
-        # format change. If the validator starts failing after an rns
-        # release, that's the alarm and we either regenerate the
-        # snapshot or fix our parser.
-        run: pip install --upgrade rns
-
-      - name: Validate pinned announce vectors
-        working-directory: reticulum-lora-transport
-        run: python tools/interop/validate_announce_vectors.py ../reticulum-specifications
-
-  native-tests:
-    name: Native unit tests (ASAN+UBSAN)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Cache PlatformIO state
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.platformio/.cache
-            ~/.platformio/packages
-            ~/.platformio/platforms
-          key: ${{ runner.os }}-pio-${{ hashFiles('platformio.ini') }}
-
-      - name: Install PlatformIO
-        run: pip install --upgrade platformio
-
-      - name: Run native tests under ASAN+UBSAN
-        env:
-          ASAN_OPTIONS: detect_leaks=1:abort_on_error=1:symbolize=1
-          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
-        run: pio test -e native_san -v
+  # The spec-pinned interop job from the sister project is intentionally
+  # absent here — this firmware is off-spec by design and would fail
+  # any spec-compliance check. Use the sister project's CI to validate
+  # spec primitives that the proxy reuses (Packet, Identity, etc).
+  #
+  # The native unit-test job is also absent — no test/native cases
+  # exist yet. Re-add as a separate job once the Proxy class has
+  # behaviour worth pinning to test vectors.
 
   firmware-build:
     name: Firmware build — ${{ matrix.board }} (nRF52840 + SX1262)
