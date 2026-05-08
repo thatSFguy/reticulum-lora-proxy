@@ -1,8 +1,8 @@
-# CLAUDE.md
+# AGENTS.md
 
-Guidance for Claude Code working in this repo. `AGENTS.md` carries the
-same content for cross-tool agent compatibility (Codex, Cursor, Aider,
-etc.) — they're kept in sync. AGENTS.md is canonical when they drift.
+Guidance for AI agents working in this repo (Claude Code, Codex,
+Cursor, Aider, etc.). `CLAUDE.md` carries the same content for tools
+that read that filename specifically.
 
 ## What this repo is
 
@@ -85,3 +85,5 @@ A near-term cleanup is to refactor `ConfigProtocol` to take a plain
   introduce mechanisms that make the proxy require explicit
   addressing by the source. If you find yourself doing that, ask
   why — you may be drifting toward the sister project.
+- When `AGENTS.md` and `CLAUDE.md` drift, AGENTS.md is canonical;
+  update both to match.
